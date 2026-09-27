@@ -237,6 +237,7 @@ const resultScreen = document.getElementById("end-screen");
 // Buttons
 
 const startBtn = document.querySelector(".start-button");
+const PrevBtn = document.getElementById("prev-button");
 const nextBtn = document.getElementById("next-button");
 const playAgainBtn = document.getElementById("play-again-button");
 
@@ -294,7 +295,9 @@ let currentScore = 0;
 
 let timer;
 
-let timeLeft = 60;
+let timeLeft = 180;
+
+let userAnswers = [];
 
 
 
@@ -314,33 +317,43 @@ startBtn.addEventListener("click", function(){
 
 
 
+//declaring time format: 
+function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    const remainingSeconds = seconds % 60;
+
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+}
+
+
 // timer function
 function startTimer() {
 
     // Stop any previous timer
     clearInterval(timer);
 
-    // Start from 60 seconds
-    timeLeft = 90;
-    time.textContent = timeLeft;
+    // Start from 180 seconds
+    timeLeft = 180;
+    time.textContent = formatTime(timeLeft);
 
     timer = setInterval(function () {
 
         timeLeft--;
 
-        time.textContent = timeLeft;
+        time.textContent = formatTime(timeLeft);
 
         if (timeLeft <= 0) {
 
             clearInterval(timer);
 
-            alert("Time's up!");
-
+            showResult();
         }
 
     }, 1000);
 }
-
 
 
 function showQuizScreen(){
@@ -367,10 +380,12 @@ function displayQuestion(){
     optionD.textContent = currentQuiz[currentQuestionIndex].options[3];
 
 
-    // Unselect all radio buttons
-    radioButtons.forEach(function(radio) {
-        radio.checked = false;
-    });
+   
+
+    // Restore previously selected answer
+radioButtons.forEach(function(radio) {
+    radio.checked = radio.value === userAnswers[currentQuestionIndex];
+});
 
 
      // Change button text on the last question
@@ -379,6 +394,9 @@ function displayQuestion(){
     } else {
         nextBtn.textContent = "Next";
     }
+
+
+    displayQuestionNumbers();
 }
 
 
@@ -388,7 +406,9 @@ generalBtn.addEventListener("click", function(){
 
     currentQuiz = quizzes.general;
     currentQuestionIndex = 0;
+    userAnswers = new Array(currentQuiz.length).fill(null);
 
+    displayQuestionNumbers();
     showQuizScreen();
     displayQuestion();
     startTimer();
@@ -403,7 +423,9 @@ javascriptBtn.addEventListener("click", function(){
 
     currentQuiz = quizzes.javascript;
     currentQuestionIndex = 0;
+    userAnswers = new Array(currentQuiz.length).fill(null);
 
+    displayQuestionNumbers();
     showQuizScreen();
     displayQuestion();
     startTimer();
@@ -411,18 +433,36 @@ javascriptBtn.addEventListener("click", function(){
 });
 
 
+//SAVE CURRENT ANSWER 
+function saveCurrentAnswer() {
 
+    const selectedAnswer = document.querySelector(
+        'input[name="answer"]:checked'
+    );
+
+    if (selectedAnswer) {
+        userAnswers[currentQuestionIndex] = selectedAnswer.value;
+    }
+}
+
+
+
+//CHECK ANSWER FOR 
 function checkAnswer() {
 
     const selectedAnswer = document.querySelector(
         'input[name="answer"]:checked'
     );
 
-    // If no answer was selected
+    if (selectedAnswer) {
+    userAnswers[currentQuestionIndex] = selectedAnswer.value;
+}
+
+
     if (!selectedAnswer) {
-        alert("Please select an answer!");
-        return false;
-    }
+    return true;
+}
+
 
     let selectedOption;
 
@@ -462,7 +502,7 @@ function checkAnswer() {
 }
 
 
-
+// NEXT BUTTON
 nextBtn.addEventListener("click", function () {
 
     const answered = checkAnswer();
@@ -487,7 +527,63 @@ nextBtn.addEventListener("click", function () {
 });
 
 
+//Previous Button
+PrevBtn.addEventListener("click", (event) => {
 
+    saveCurrentAnswer();
+
+    if (currentQuestionIndex > 0) {
+
+        currentQuestionIndex--;
+
+        displayQuestion();
+    }
+});
+
+// NUMBERING
+const questionNumbers = document.getElementById("question-numbers");
+function displayQuestionNumbers() {
+
+    questionNumbers.innerHTML = "";
+
+    currentQuiz.forEach(function(question, index) {
+
+        const number = document.createElement("button");
+
+        number.textContent = index + 1;
+
+        number.classList.add("question-number");
+
+        // Current question
+        if (index === currentQuestionIndex) {
+            number.classList.add("current");
+        }
+
+        // Question has been answered
+        else if (userAnswers[index] !== null) {
+            number.classList.add("answered");
+        }
+
+        // Click the number to go to that question
+        number.addEventListener("click", function() {
+
+            // Save the answer currently selected
+            saveCurrentAnswer();
+
+            // Move to the clicked question
+            currentQuestionIndex = index;
+
+            // Display that question
+            displayQuestion();
+
+        });
+
+        questionNumbers.appendChild(number);
+    });
+}
+
+
+// Result Screen
 function showResult() {
 
     // Stop the timer
@@ -576,6 +672,7 @@ playAgainBtn.addEventListener("click", function () {
     // Reset quiz
     currentQuestionIndex = 0;
     currentScore = 0;
+    userAnswers = new Array(currentQuiz.length).fill(null);
 
     // Show quiz screen
     resultScreen.style.display = "none";
@@ -606,7 +703,7 @@ homeBtn.addEventListener("click", function () {
     categoryScreen.style.display = "none";
 
     // Show home screen
-    startScreen.style.display = "block";
+    startScreen.style.display = "";
 
 });
 

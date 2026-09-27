@@ -22,15 +22,10 @@
   </head>
 
   <body>
+    <!--START SCREEN-->
     <section id="start-screen">
-      <h1>
-        Welcome to <br />
-        <span id="quiz-master"> Quiz Master</span>
-      </h1>
-      <p>
-        Test your knowledge with our <br />
-        fun quizzes!
-      </p>
+      <h1>Welcome to <span id="quiz-master"> Quiz Master</span></h1>
+      <p>Test your knowledge with our fun quizzes!</p>
 
       <button class="start-button">
         <!-- Start quiz icon (rocket)- -->
@@ -56,6 +51,7 @@
       </button>
     </section>
 
+    <!--CATEGORY SCREEN-->
     <section id="category-screen">
       <div class="header">
         <h2>Choose <span id="quiz">Quiz</span> Category</h2>
@@ -63,7 +59,7 @@
       </div>
 
       <div class="container">
-        <div class="card" style="width: 25rem">
+        <div class="card">
           <div class="card-body">
             <h5 class="card-title">General Knowledge</h5>
             <hr />
@@ -132,7 +128,7 @@
     <section id="quiz-screen">
       <div class="quiz-header">
         <h3>Quiz <span id="master"> Master</span></h3>
-        <h5>Time left: <span id="time">60</span> seconds</h5>
+        <h5>Time left: <span id="time">00:03:00</span></h5>
       </div>
 
       <h3 id="question"></h3>
@@ -162,7 +158,12 @@
         </label>
       </div>
 
-      <button id="next-button">Next</button>
+      <div class="action-btn">
+        <button id="prev-button">Previous</button>
+        <button id="next-button">Next</button>
+      </div>
+      
+      <div id="question-numbers"></div>
     </section>
 
     <section id="end-screen">
@@ -219,20 +220,15 @@
 
         <!-- Performance -->
         <div class="performance-card">
-          <div class="performance-icon">
-            
-          </div>
 
-          <div>
             <h3 id="performance"></h3>
 
             <p id="performance-message"></p>
-          </div>
+      
         </div>
 
         <!-- Buttons -->
         <div class="result-buttons">
-
           <button id="play-again-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
